@@ -2,7 +2,7 @@
 
 > 面向 Windows 的桌面常驻小工具：把「显示器 + 分辨率 + 刷新率 + HDR」保存成命名方案，之后用一次点击、托盘菜单或全局快捷键在两套显示配置之间瞬间切换，不必再进「设置 → 系统 → 显示」逐项调整。
 
-![image](https://github.com/LFT135/SnapRes/1.png)
+![image](https://github.com/LFT135/SnapRes/blob/main/1.png)
 
 ## 功能特性
 
