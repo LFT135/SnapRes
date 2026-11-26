@@ -146,7 +146,8 @@ const I18N = {
     autostartOffInfo: "Off · will not launch with Windows",
     autostartFail: "Failed to change autostart",
     cycleDesc: "Cycle to the next plan in order",
-    shortcutDesc: "Click, then press a combo; must include Ctrl / Alt / Shift / Win",
+    shortcutDesc:
+      "Click, then press a combo; must include Ctrl / Alt / Shift / Win",
     escHint: "Esc to cancel",
     closePrompt: "Ask when closing",
     closePromptDesc: "Ask whether to quit or hide to the tray when closing",
@@ -154,7 +155,8 @@ const I18N = {
     closeTray: "Hide to tray",
     closeExit: "Quit",
     closeTitle: "Close the app?",
-    closeText: "Quit the app, or hide it to the tray and keep running in the background?",
+    closeText:
+      "Quit the app, or hide it to the tray and keep running in the background?",
     remember: "Remember my choice, don't ask again",
     rememberHint: "You can re-enable this prompt in Settings",
     quitApp: "Quit",
@@ -968,9 +970,7 @@ function planSubtitle(p) {
                 :class="{ capturing: capturing === 'cycle' }"
                 :title="capturing === 'cycle' ? t.pressKey : t.bind"
                 @click="
-                  capturing === 'cycle'
-                    ? stopCapture()
-                    : startCapture('cycle')
+                  capturing === 'cycle' ? stopCapture() : startCapture('cycle')
                 "
               >
                 {{
@@ -1158,7 +1158,11 @@ function planSubtitle(p) {
               {{ t.delete }}
             </button>
             <span class="spacer"></span>
-            <button v-if="dirty" class="btn ghost" @click="loadDetail(selected)">
+            <button
+              v-if="dirty"
+              class="btn ghost"
+              @click="loadDetail(selected)"
+            >
               {{ t.cancel }}
             </button>
             <button class="btn" @click="saveDetail">{{ t.save }}</button>
@@ -1222,25 +1226,27 @@ function planSubtitle(p) {
           </div>
         </div>
 
-        <div class="field">
-          <label>{{ t.hdr }}</label>
-          <label class="switch">
-            <input
-              type="checkbox"
-              v-model="dlg.hdr"
-              :disabled="!hdrSupportedOfSelected"
-            />
-            <span class="track"><span class="thumb"></span></span>
-            <span class="switch-label dim">
-              {{
-                hdrSupportedOfSelected
-                  ? dlg.hdr
-                    ? t.hdrOn
-                    : t.hdrOff
-                  : t.hdrUnsupported
-              }}
-            </span>
-          </label>
+        <div class="grid2">
+          <div class="field">
+            <label>{{ t.hdr }}</label>
+            <label class="switch">
+              <input
+                type="checkbox"
+                v-model="dlg.hdr"
+                :disabled="!hdrSupportedOfSelected"
+              />
+              <span class="track"><span class="thumb"></span></span>
+              <span class="switch-label dim">
+                {{
+                  hdrSupportedOfSelected
+                    ? dlg.hdr
+                      ? t.hdrOn
+                      : t.hdrOff
+                    : t.hdrUnsupported
+                }}
+              </span>
+            </label>
+          </div>
         </div>
 
         <div class="field">
@@ -1756,6 +1762,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+.field:not(.inline) > .switch {
+  align-self: flex-start;
 }
 .field.inline {
   flex-direction: row;
