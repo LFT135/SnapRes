@@ -382,12 +382,23 @@ use tauri::{
     tray::TrayIconBuilder,
     AppHandle, Emitter, Manager, Wry,
 };
-use tauri_plugin_autostart::MacosLauncher;
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 
 /// 未收到前端同步前的默认循环快捷键
 const DEFAULT_CYCLE_SHORTCUT: &str = "Ctrl+Alt+R";
 const TRAY_ID: &str = "main";
+
+/// 开机自启时附加的启动参数：带上它表示"静默启动"，只显示托盘图标。
+/// 该常量同时用于注册自启项和解析命令行，两边必须一致。
+const HIDDEN_FLAG: &str = "--hidden";
+
+/// 判断本次是否应当静默启动（由开机自启拉起）
+fn started_hidden() -> bool {
+    std::env::args()
+        .skip(1)
+        .any(|a| a.eq_ignore_ascii_case(HIDDEN_FLAG) || a.eq_ignore_ascii_case("/hidden"))
+}
 
 #[derive(Default)]
 struct AppData {
@@ -581,7 +592,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
-            Some(vec![]),
+            Some(vec![HIDDEN_FLAG]),
         ))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .manage(AppState::default())
@@ -638,6 +649,21 @@ pub fn run() {
             })();
             if let Err(e) = build_result {
                 eprintln!("托盘初始化失败（不影响主窗口）: {e}");
+            }
+
+            // 不带 --hidden 即视为手动启动：显示主窗口。
+            // 同时兼容旧版本注册的自启项（不带 --hidden）：已开启自启时重写一次，把参数补上，
+            // 这样下次登录开机就能真正静默进托盘。
+            if !started_hidden() {
+                let al = app.autolaunch();
+                if al.is_enabled().unwrap_or(false) {
+                    if let Err(e) = al.enable() {
+                        eprintln!("刷新开机自启参数失败: {e}");
+                    }
+                }
+                if let Some(w) = app.get_webview_window("main") {
+                    let _ = w.show();
+                }
             }
 
             // 启动先挂上默认循环快捷键；前端加载完成后由 sync_plans 接管
